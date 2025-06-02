@@ -4,16 +4,17 @@ function animateRichTextLines() {
   const richTexts = document.querySelectorAll('.text-rich-text');
 
   richTexts.forEach(container => {
-    // Evita animar si ya se procesó antes
+    // Evita dividir texto si ya se hizo
     if (container.dataset.splitDone === "true") return;
 
-    // Divide en líneas usando SplitType
+    // Asegura que el contenedor está visible (por si está dentro de un tab/slider)
+    if (container.offsetParent === null) return;
+
     const typeSplit = new SplitType(container, {
       types: 'lines',
       tagName: 'span'
     });
 
-    // Animación de entrada por línea
     gsap.from(container.querySelectorAll('.line'), {
       yPercent: 100,
       opacity: 0,
@@ -27,21 +28,21 @@ function animateRichTextLines() {
       }
     });
 
-    // Marca como animado
     container.dataset.splitDone = "true";
   });
 }
 
+// Espera a que todo esté listo
 window.addEventListener('load', () => {
   animateRichTextLines();
 
-  // Re-aplica si se cambia contenido con tabs, sliders o dropdowns de Webflow
+  // Reaplica en interacción con Webflow
   const triggers = document.querySelectorAll('[data-w-tab], .w-slider-arrow, .w-dropdown-toggle');
   triggers.forEach(trigger => {
     trigger.addEventListener('click', () => {
       setTimeout(() => {
         animateRichTextLines();
-      }, 250); // Tiempo para que el DOM actualice
+      }, 300); // Espera más larga para que el contenido esté visible
     });
   });
 });
